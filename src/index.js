@@ -14,8 +14,14 @@ refs.inputEl.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 function onInputChange(e) {
   let countryName = e.target.value.trim();
   console.log(countryName);
-  fetchCountries(countryName).then(dataCountry =>
-    dataCountry.map(
+  fetchCountries(countryName).then(dataCountry => {
+    console.log(mapCountries(dataCountry));
+    return addCountryList(mapCountries(dataCountry));
+  });
+}
+function mapCountries(arr) {
+  return arr
+    .map(
       ({
         name: { official },
         capital,
@@ -23,26 +29,22 @@ function onInputChange(e) {
         flag,
         flags: { svg },
         languages,
-      }) => addCountryList({ official, flag })
+      }) => {
+        return `<li>
+      <p><span>${flag}</span>${official}</p>
+    </li>`;
+      }
     )
-  );
+    .join('');
 }
 
-function addCountryList({ official, flag }) {
-  refs.countryListEl.insertAdjacentHTML(
-    'beforeend',
-    `<li>
-      <p><span>${flag}</span>${official}</p>
-    </li>`
-  );
+function addCountryList(a) {
+  refs.countryListEl.innerHTML = a;
 }
 function addCountryInfo({ official, capital, population, svg, languages }) {
-  refs.countryInfoEl.insertAdjacentHTML(
-    'beforeend',
-    `<h1>Country: ${official}</h1>
+  refs.countryInfoEl.innerHTML = `<h1>Country: ${official}</h1>
     <h2>Capital: ${capital}</h2>
     <p>Population: ${population}</p>
     <img src=${svg} alt="flag of ${official}">
-    <p>Languages: ${languages}</p>`
-  );
+    <p>Languages: ${languages}</p>`;
 }
